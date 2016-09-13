@@ -482,6 +482,7 @@
 				63B0AC521D595E1B00FA21D9 /* Sources */,
 				63B0AC531D595E1B00FA21D9 /* Frameworks */,
 				63B0AC541D595E1B00FA21D9 /* Headers */,
+				AAC088621D887BFA002D11C7 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -530,6 +531,22 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		AAC088621D887BFA002D11C7 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "${PROJECT_DIR}/medbridge-copy-framework.sh\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		630019021D596292003B4E30 /* Sources */ = {
