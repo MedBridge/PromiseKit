@@ -32,15 +32,15 @@ Pod::Spec.new do |s|
     ss.dependency 'PromiseKit/CorePromise'
   end
 
-  # s.subspec 'Alamofire' do |ss|
-  #   ss.source_files = 'Extensions/Alamofire/Sources/*'
-  #   ss.dependency 'Alamofire', '~> 4.0'
-  #   ss.dependency 'PromiseKit/CorePromise'
-  #   ss.ios.deployment_target = '9.0'
-  #   ss.osx.deployment_target = '10.11'
-  #   ss.tvos.deployment_target = '9.0'
-  #   ss.watchos.deployment_target = '2.0'
-  # end
+  s.subspec 'Alamofire' do |ss|
+    ss.source_files = 'Extensions/Alamofire/Sources/*'
+    ss.dependency 'Alamofire', '~> 4.0'
+    ss.dependency 'PromiseKit/CorePromise'
+    ss.ios.deployment_target = '9.0'
+    ss.osx.deployment_target = '10.11'
+    ss.watchos.deployment_target = '2.0'
+    ss.tvos.deployment_target = '9.0'
+  end
 
   s.subspec 'AddressBook' do |ss|
     ss.ios.source_files = 'Extensions/AddressBook/Sources/*'
@@ -120,6 +120,13 @@ Pod::Spec.new do |s|
     ss.ios.frameworks = ss.osx.frameworks = ss.tvos.frameworks = 'MapKit'
     ss.tvos.deployment_target = '9.2'
     ss.dependency 'PromiseKit/CorePromise'
+
+    # respecify due to CocoaPods bug where specifying any
+    # deployment_target on a subspec causes all other platforms
+    # to not inherit deployment targets from their parent spec
+    ss.ios.deployment_target = '8.0'
+    ss.osx.deployment_target = '10.10'
+    ss.watchos.deployment_target = '2.0'
   end
 
   s.subspec 'MessageUI' do |ss|
@@ -139,6 +146,13 @@ Pod::Spec.new do |s|
     ss.ios.frameworks = ss.tvos.frameworks = 'Photos'
     ss.tvos.deployment_target = '10.0'
     ss.dependency 'PromiseKit/CorePromise'
+    
+    # respecify due to CocoaPods bug where specifying any
+    # deployment_target on a subspec causes all other platforms
+    # to not inherit deployment targets from their parent spec
+    ss.ios.deployment_target = '8.0'
+    ss.osx.deployment_target = '10.10'
+    ss.watchos.deployment_target = '2.0'
   end
 
   s.subspec 'QuartzCore' do |ss|
@@ -166,10 +180,27 @@ Pod::Spec.new do |s|
     ss.dependency 'PromiseKit/CorePromise'
   end
 
+  picker_cc = 'Extensions/UIKit/Sources/UIImagePickerController+Promise.swift'
+  
   s.subspec 'UIKit' do |ss|
-    ss.ios.source_files = ss.tvos.source_files = 'Extensions/UIKit/Sources/*'
+    ss.ios.source_files = ss.tvos.source_files = Dir['Extensions/UIKit/Sources/*'] - [picker_cc]
     ss.tvos.frameworks = ss.ios.frameworks = 'UIKit'
     ss.dependency 'PromiseKit/CorePromise'
+  end
+
+  s.subspec 'UIImagePickerController' do |ss|
+    # Since iOS 10, App Store submissions that contain references to
+    # UIImagePickerController (even if unused in 3rd party libraries)
+    # are rejected unless an Info.plist key is specified, thus we
+    # moved this code to a sub-subspec.
+    #
+    # This *was* a subspec of UIKit, but bizarrely CocoaPods would
+    # include this when specifying *just* UIKit…!
+
+    ss.ios.source_files = picker_cc
+    ss.ios.frameworks = 'UIKit'
+    ss.xcconfig = { "GCC_PREPROCESSOR_DEFINITIONS" => '$(inherited) PMKImagePickerController=1' }
+    ss.dependency 'PromiseKit/UIKit'
   end
 
   s.subspec 'WatchConnectivity' do |ss|
